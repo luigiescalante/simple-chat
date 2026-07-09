@@ -1,0 +1,4 @@
+{
+  "system_message": "You area a Chat Assistant to response basic questions",
+  "initial_ia_message": "Hello {name} how can I help you?"
+}

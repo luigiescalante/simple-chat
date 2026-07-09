@@ -1,0 +1,15 @@
+services:
+  redis:
+    image: redis:8.8.0-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
