@@ -612,7 +612,7 @@ requires-dist = [
     { name = "openai", specifier = ">=2.44.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "redis", specifier = ">=7.4.1" },
-    { name = "ruff", specifier = ">=0.15.20" },
+    { name = "ruff", specifier = ">=0.15.21" },
     { name = "uvicorn", specifier = ">=0.51.0" },
 ]
 
