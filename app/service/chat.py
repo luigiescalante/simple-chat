@@ -1,27 +1,44 @@
+import logging
+from typing import Any
+
 from langchain_core.messages.ai import AIMessage
+from langchain_core.messages.human import HumanMessage
 from langchain_core.messages.system import SystemMessage
+from langchain_openai.chat_models.base import ChatOpenAI
+from langchain_redis import RedisChatMessageHistory
 
 from app.infrastructure.ia.openia_cli import OpenAICli
+from app.model.chat import IAChat
 
 
-def start_chat() -> Exception | None:
-    message = [
-        SystemMessage("You area a Chat Assistant to response basic questions"),
-        AIMessage("hello How Are you?"),
-    ]
-    try:
-        llm = OpenAICli()
-        while True:
-            human = input("\nYou:")
-            if human == "exit":
-                print("Exiting chat...")
-                break
-            llm.history.add_message(AIMessage(human))
-            response = llm.client.invoke(message)
-            llm.history.add_message(AIMessage(response.content))
+class IAChatService:
+    chat: IAChat
+    llm_history: RedisChatMessageHistory
+    llm_cli: ChatOpenAI
 
-            print(llm.history.messages)
-            print(response.content)
-    except Exception as e:
-        print(e)
-        return e
+    def new_chat(self):
+        try:
+            llm = OpenAICli()
+            self.llm_cli = llm.client
+            self.llm_history = llm.history
+            self.chat = IAChat()
+            self.chat.create_chat()
+        except Exception as e:
+            logging.error(e)
+
+    def start_conversation(self) -> str:
+        message = [
+            SystemMessage(self.chat.get_role()),
+            AIMessage(self.chat.get_initial_message()),
+        ]
+        self.llm_history.add_messages(message)
+        self.llm_cli.invoke(message)
+        return self.chat.get_initial_message()
+
+    def send_message(self, msg: str) -> str | list[str | Any]:
+        human_msg = HumanMessage(msg)
+        self.llm_history.add_message(human_msg)
+        response = self.llm_cli.invoke(human_msg.content)
+        response_message = response.content
+        self.llm_history.add_message(AIMessage(response_message))
+        return response_message
