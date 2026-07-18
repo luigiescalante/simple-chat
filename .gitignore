@@ -1,3 +1,5 @@
 .env
+.coverage
 .idea/
 *.pyc
+app/resources/images/*

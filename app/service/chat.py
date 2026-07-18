@@ -19,7 +19,7 @@ class IAChatService:
     def new_chat(self):
         try:
             llm = OpenAICli()
-            self.llm_cli = llm.client
+            self.llm_cli = llm.chat_cli
             self.llm_history = llm.history
             self.chat = IAChat()
             self.chat.create_chat()
